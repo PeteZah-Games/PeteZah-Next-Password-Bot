@@ -43,8 +43,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
   if (interaction.commandName === 'password') {
     await interaction.deferReply();
 
-    throw new Error('This command is not implemented yet.');
-
     const password = await getPasswordPrioritized();
 
     if (!password) {
