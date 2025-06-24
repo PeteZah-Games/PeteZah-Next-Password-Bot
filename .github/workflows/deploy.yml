@@ -1,0 +1,42 @@
+name: Deploy on Push
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy to server
+      run: |
+        ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          pkill -f "node ./index.js" || true
+          cd ./pzn-bot
+          git pull
+          npm install
+          timestamp=$(date +"[%I:%M:%S %p %Z]")
+          echo "$timestamp PeteZah-Next start initiated at $timestamp 🔥 ✅ 🚀"
+          echo "$timestamp PeteZah-Next start initiated at $timestamp 🔥 ✅ 🚀" >> out.log
+          nohup bash -c 'npm run start-ubuntu 2>&1 | awk '\''{ \
+            cstcmd="TZ=America/Chicago date +\"[CST: %Y-%m-%d %I:%M:%S %p]\""; \
+            utc="TZ=UTC date +\"[UTC: %Y-%m-%d %I:%M:%S %p]\""; \
+            cstcmd | getline cst; close(cstcmd); \
+            utc | getline u; close(utc); \
+            print cst, u, $0; fflush(); \
+          }'\'' >> out.log' </dev/null >/dev/null 2>&1 &
+        EOF
+
