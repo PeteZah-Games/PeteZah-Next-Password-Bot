@@ -1,0 +1,29 @@
+{
+  "name": "pzn-pwd-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js",
+    "start-windows": "powershell -Command \"while ($true) { node ./index.js; Write-Host 'App crashed. Restarting...' -ForegroundColor White -BackgroundColor DarkRed }\"",
+    "start-ubuntu": "while true; do node ./index.js || { echo '\\e[97;41m App crashed. Restarting... \\e[0m'; sleep 2; }; done",
+    "nodemon": "cross-env NODENAME=nodemon nodemon index.js --ignore ./memory/* --ignore ./dist/*",
+    "setup": "npm install && npm install -g cross-env"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/InternetBowser670/PeteZah-Next-Password-Bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/InternetBowser670/PeteZah-Next-Password-Bot/issues"
+  },
+  "homepage": "https://github.com/InternetBowser670/PeteZah-Next-Password-Bot#readme",
+  "description": "",
+  "type": "module",
+  "dependencies": {
+    "@upstash/redis": "^1.35.0",
+    "discord.js": "^14.20.0",
+    "dotenv": "^16.5.0"
+  }
+}
