@@ -6,7 +6,7 @@
     "dev": "node index.js",
     "start-windows": "powershell -Command \"while ($true) { node ./index.js; Write-Host 'App crashed. Restarting...' -ForegroundColor White -BackgroundColor DarkRed }\"",
     "start-ubuntu": "while true; do node ./index.js || { echo '\\e[97;41m App crashed. Restarting... \\e[0m'; sleep 2; }; done",
-    "nodemon": "cross-env NODENAME=nodemon nodemon index.js --ignore ./memory/* --ignore ./dist/*",
+    "nodemon": "while true; do nodemon index.js || { echo '\\e[97;41m App crashed. Restarting... \\e[0m'; sleep 2; }; done",
     "setup": "npm install && npm install -g cross-env"
   },
   "repository": {
