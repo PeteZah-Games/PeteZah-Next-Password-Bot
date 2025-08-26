@@ -9,19 +9,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with: 
-        fetch-depth: 1
-        sparse-checkout: true
-        sparse-checkout-paths: |
-          - index.js
-          - register-commands.js
-          - package.json
-        sparse-checkout-cone-mode: false  # Ensures manual path control
-
     - name: Setup SSH
       run: |
         mkdir -p ~/.ssh
@@ -33,7 +21,7 @@ jobs:
     - name: Deploy to server
       run: |
         ssh -i ~/.ssh/id_ed25519 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          set -e  # Exit on error
+          set -e 
           cd ./pzn-bot || { echo "Directory ./pzn-bot not found"; exit 1; }
 
           echo "Pulling latest code..."
