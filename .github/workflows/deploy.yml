@@ -16,10 +16,11 @@ jobs:
       with: 
         fetch-depth: 1
         sparse-checkout: true
-        sparse-checkout-paths:
+        sparse-checkout-paths: |
           - index.js
           - register-commands.js
           - package.json
+        sparse-checkout-cone-mode: false  # Ensures manual path control
 
     - name: Setup SSH
       run: |
@@ -27,17 +28,27 @@ jobs:
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
         chmod 600 ~/.ssh/id_ed25519
         ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+        export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes"
 
     - name: Deploy to server
       run: |
-        ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          pkill -f "node ./index.js" || true
-          cd ./pzn-bot
-          git pull
-          npm install
+        ssh -i ~/.ssh/id_ed25519 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          set -e  # Exit on error
+          cd ./pzn-bot || { echo "Directory ./pzn-bot not found"; exit 1; }
+
+          echo "Pulling latest code..."
+          git pull || { echo "Git pull failed"; exit 1; }
+
+          echo "Installing dependencies..."
+          npm install || { echo "npm install failed"; exit 1; }
+
           timestamp=$(date +"[%I:%M:%S %p %Z]")
-          echo "$timestamp PeteZah-Next start initiated at $timestamp 🔥 ✅ 🚀"
-          echo "$timestamp PeteZah-Next start initiated at $timestamp 🔥 ✅ 🚀" >> out.log
+          echo "$timestamp PeteZah-Next start initiated at $timestamp"
+          echo "$timestamp PeteZah-Next start initiated at $timestamp" >> out.log
+
+          echo "Restarting application..."
+          pkill -f "node ./index.js" || echo "No running process found"
+
           nohup bash -c 'npm run start-ubuntu 2>&1 | awk '\''{ \
             cstcmd="TZ=America/Chicago date +\"[CST: %Y-%m-%d %I:%M:%S %p]\""; \
             utc="TZ=UTC date +\"[UTC: %Y-%m-%d %I:%M:%S %p]\""; \
@@ -46,4 +57,3 @@ jobs:
             print cst, u, $0; fflush(); \
           }'\'' >> out.log' </dev/null >/dev/null 2>&1 &
         EOF
-
