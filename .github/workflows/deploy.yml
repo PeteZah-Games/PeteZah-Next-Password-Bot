@@ -12,7 +12,14 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with: 
+        fetch-depth: 1
+        sparse-checkout: true
+        sparse-checkout-paths:
+          - index.js
+          - register-commands.js
+          - package.json
 
     - name: Setup SSH
       run: |
