@@ -35,6 +35,9 @@ const client = new Client({
 
 client.once(Events.ClientReady, () => {
   console.log(`Logged in as ${client.user.tag}`);
+  client.user?.setActivity("/password", {
+    type: ActivityType.Watching,
+  });
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
