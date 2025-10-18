@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Events } from 'discord.js';
+import { ActivityType, Client, GatewayIntentBits, Events } from 'discord.js';
 import { Redis } from '@upstash/redis';
 import 'dotenv/config';
 
