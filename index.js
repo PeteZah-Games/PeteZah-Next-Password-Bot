@@ -66,7 +66,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     const { pwd, ct } = await getPasswordPrioritized();
 
-    if (!password) {
+    if (!pwd) {
       await interaction.editReply('No passwords found in Redis.');
     } else {
       await interaction.editReply(`The latest password is: **${pwd}**, this is the ${formatOrdinals(ct)} time someone has requested it.`);
